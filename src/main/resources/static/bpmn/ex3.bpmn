@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.2.0" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.0.0" camunda:diagramRelationId="bc9f35ca-ae65-4cfe-8b81-dc2c574f62a7">
+  <bpmn:process id="Ex3" name="EX3" isExecutable="true">
+    <bpmn:extensionElements>
+      <zeebe:userTaskForm id="userTaskForm_01oageg">{
+  "components": [
+    {
+      "label": "Invoice Id",
+      "type": "number",
+      "id": "Field_16cjt4v",
+      "key": "invoiceId",
+      "disabled": true
+    },
+    {
+      "label": "Invoice owner",
+      "type": "textfield",
+      "id": "Field_1a5l9hs",
+      "key": "invoiceOwner",
+      "disabled": true
+    },
+    {
+      "label": "Invoice amount",
+      "type": "number",
+      "id": "Field_0nvbyqq",
+      "key": "invoiceAmount",
+      "disabled": true
+    },
+    {
+      "label": "Approve Invoice?",
+      "type": "checkbox",
+      "id": "Field_1lpoj18",
+      "key": "approved"
+    }
+  ],
+  "type": "default",
+  "id": "verifyInvoice",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.0.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.2.0"
+  },
+  "schemaVersion": 4
+}</zeebe:userTaskForm>
+    </bpmn:extensionElements>
+    <bpmn:startEvent id="StartEvent_1" name="Invoice received">
+      <bpmn:outgoing>Flow_04fyajs</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="requestData" name="Request invoice data">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="retrieveData" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_04fyajs</bpmn:incoming>
+      <bpmn:outgoing>Flow_1u0s5q3</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:intermediateCatchEvent id="Event_0iosvx5" name="Invoice data received">
+      <bpmn:incoming>Flow_1u0s5q3</bpmn:incoming>
+      <bpmn:outgoing>Flow_1gle7fs</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1rgbc86" messageRef="Message_3k5cbmj" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:exclusiveGateway id="Gateway_1spio7x" name="Invoice approved?">
+      <bpmn:incoming>Flow_1g88q01</bpmn:incoming>
+      <bpmn:outgoing>Flow_0cco2le</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0swx79x</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_0cco2le" name="No" sourceRef="Gateway_1spio7x" targetRef="Activity_16o2sg2">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=approved = false</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_04fyajs" sourceRef="StartEvent_1" targetRef="requestData" />
+    <bpmn:sequenceFlow id="Flow_1u0s5q3" sourceRef="requestData" targetRef="Event_0iosvx5" />
+    <bpmn:sequenceFlow id="Flow_1gle7fs" sourceRef="Event_0iosvx5" targetRef="Activity_05m2wp9" />
+    <bpmn:userTask id="Activity_05m2wp9" name="Verify invoice">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formKey="camunda-forms:bpmn:userTaskForm_01oageg" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1gle7fs</bpmn:incoming>
+      <bpmn:outgoing>Flow_1g88q01</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1g88q01" sourceRef="Activity_05m2wp9" targetRef="Gateway_1spio7x" />
+    <bpmn:endEvent id="Event_1bghkjj" name="Invoice declined">
+      <bpmn:incoming>Flow_18z5ktv</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_1sb1yi8" name="Invoice approved">
+      <bpmn:incoming>Flow_129nheb</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:serviceTask id="Activity_16o2sg2" name="Send rejection" zeebe:modelerTemplate="io.camunda.connectors.SendGrid.v1.content" zeebe:modelerTemplateIcon="data:image/svg+xml;utf8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Cpath%20d%3D%22M0.285706%205.40847H5.43837V10.5611H0.285706V5.40847Z%22%20fill%3D%22white%22%2F%3E%0A%3Cpath%20d%3D%22M0.285706%205.40847H5.43837V10.5611H0.285706V5.40847Z%22%20fill%3D%22%2399E1F4%22%2F%3E%0A%3Cpath%20d%3D%22M5.43837%2010.5611L10.5611%2010.5616V15.6844H5.43837V10.5611Z%22%20fill%3D%22white%22%2F%3E%0A%3Cpath%20d%3D%22M5.43837%2010.5611L10.5611%2010.5616V15.6844H5.43837V10.5611Z%22%20fill%3D%22%2399E1F4%22%2F%3E%0A%3Cpath%20d%3D%22M0.285706%2015.6846L5.43837%2015.6844V15.7143H0.285706V15.6846ZM0.285706%2010.5619H5.43837V15.6844L0.285706%2015.6846V10.5619Z%22%20fill%3D%22%231A82E2%22%2F%3E%0A%3Cpath%20d%3D%22M5.43837%200.285706H10.5611V5.40847H5.43837V0.285706ZM10.5616%205.43837H15.7143V10.5611H10.5616V5.43837Z%22%20fill%3D%22%2300B3E3%22%2F%3E%0A%3Cpath%20d%3D%22M5.43837%2010.5611L10.5611%2010.5616V5.40847H5.43837V10.5611Z%22%20fill%3D%22%23009DD9%22%2F%3E%0A%3Cpath%20d%3D%22M10.5611%200.285706H15.7143V5.40847H10.5611V0.285706Z%22%20fill%3D%22%231A82E2%22%2F%3E%0A%3Cpath%20d%3D%22M10.5611%205.40847H15.7143V5.43837H10.5616L10.5611%205.40847Z%22%20fill%3D%22%231A82E2%22%2F%3E%0A%3C%2Fsvg%3E">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:sendgrid:1" />
+        <zeebe:ioMapping>
+          <zeebe:input source="text/plain" target="content.type" />
+          <zeebe:input source="patricio.zambrano@camunda.com" target="from.email" />
+          <zeebe:input source="Patricio Zambrano Garcia" target="from.name" />
+          <zeebe:input source="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" target="apiKey" />
+          <zeebe:input source="patozgg@gmail.com" target="to.email" />
+          <zeebe:input source="Patricio Zambrano Garcia" target="to.name" />
+          <zeebe:input source="Invoice approval" target="content.subject" />
+          <zeebe:input source="Invoice xyz has been declined!" target="content.value" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0cco2le</bpmn:incoming>
+      <bpmn:incoming>Flow_14ssmdm</bpmn:incoming>
+      <bpmn:outgoing>Flow_18z5ktv</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_18z5ktv" sourceRef="Activity_16o2sg2" targetRef="Event_1bghkjj" />
+    <bpmn:boundaryEvent id="Event_00tszqz" name="Invoice Id invalid" attachedToRef="requestData">
+      <bpmn:outgoing>Flow_14ssmdm</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_0nfz0jd" errorRef="Error_00zre1d" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_14ssmdm" sourceRef="Event_00tszqz" targetRef="Activity_16o2sg2" />
+    <bpmn:sequenceFlow id="Flow_0swx79x" name="Yes" sourceRef="Gateway_1spio7x" targetRef="Activity_0zatqqh">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">= approved = true</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:serviceTask id="Activity_0zatqqh" name="Send approval" zeebe:modelerTemplate="io.camunda.connectors.SendGrid.v1.content" zeebe:modelerTemplateIcon="data:image/svg+xml;utf8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Cpath%20d%3D%22M0.285706%205.40847H5.43837V10.5611H0.285706V5.40847Z%22%20fill%3D%22white%22%2F%3E%0A%3Cpath%20d%3D%22M0.285706%205.40847H5.43837V10.5611H0.285706V5.40847Z%22%20fill%3D%22%2399E1F4%22%2F%3E%0A%3Cpath%20d%3D%22M5.43837%2010.5611L10.5611%2010.5616V15.6844H5.43837V10.5611Z%22%20fill%3D%22white%22%2F%3E%0A%3Cpath%20d%3D%22M5.43837%2010.5611L10.5611%2010.5616V15.6844H5.43837V10.5611Z%22%20fill%3D%22%2399E1F4%22%2F%3E%0A%3Cpath%20d%3D%22M0.285706%2015.6846L5.43837%2015.6844V15.7143H0.285706V15.6846ZM0.285706%2010.5619H5.43837V15.6844L0.285706%2015.6846V10.5619Z%22%20fill%3D%22%231A82E2%22%2F%3E%0A%3Cpath%20d%3D%22M5.43837%200.285706H10.5611V5.40847H5.43837V0.285706ZM10.5616%205.43837H15.7143V10.5611H10.5616V5.43837Z%22%20fill%3D%22%2300B3E3%22%2F%3E%0A%3Cpath%20d%3D%22M5.43837%2010.5611L10.5611%2010.5616V5.40847H5.43837V10.5611Z%22%20fill%3D%22%23009DD9%22%2F%3E%0A%3Cpath%20d%3D%22M10.5611%200.285706H15.7143V5.40847H10.5611V0.285706Z%22%20fill%3D%22%231A82E2%22%2F%3E%0A%3Cpath%20d%3D%22M10.5611%205.40847H15.7143V5.43837H10.5616L10.5611%205.40847Z%22%20fill%3D%22%231A82E2%22%2F%3E%0A%3C%2Fsvg%3E">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:sendgrid:1" />
+        <zeebe:ioMapping>
+          <zeebe:input source="text/plain" target="content.type" />
+          <zeebe:input source="patricio.zambrano@camunda.com" target="from.email" />
+          <zeebe:input source="Patricio Zambrano Garcia" target="from.name" />
+          <zeebe:input source="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" target="apiKey" />
+          <zeebe:input source="patozgg@gmail.com" target="to.email" />
+          <zeebe:input source="Patricio Zambrano Garcia" target="to.name" />
+          <zeebe:input source="Invoice approval" target="content.subject" />
+          <zeebe:input source="Invoice xyz has been approved" target="content.value" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0swx79x</bpmn:incoming>
+      <bpmn:outgoing>Flow_129nheb</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_129nheb" sourceRef="Activity_0zatqqh" targetRef="Event_1sb1yi8" />
+    <bpmn:textAnnotation id="TextAnnotation_0iqwor8">
+      <bpmn:text>Had to change to service task in order to complete junit test</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_0qw7yh9" sourceRef="Activity_0zatqqh" targetRef="TextAnnotation_0iqwor8" />
+  </bpmn:process>
+  <bpmn:message id="Message_3k5cbmj" name="data_received">
+    <bpmn:extensionElements>
+      <zeebe:subscription correlationKey="=invoiceId" />
+    </bpmn:extensionElements>
+  </bpmn:message>
+  <bpmn:error id="Error_00zre1d" name="invalidID" errorCode="invalidID" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Ex3">
+      <bpmndi:BPMNShape id="TextAnnotation_0iqwor8_di" bpmnElement="TextAnnotation_0iqwor8">
+        <dc:Bounds x="910" y="120" width="100" height="84" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_129nheb_di" bpmnElement="Flow_129nheb">
+        <di:waypoint x="890" y="260" />
+        <di:waypoint x="1142" y="260" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0swx79x_di" bpmnElement="Flow_0swx79x">
+        <di:waypoint x="670" y="345" />
+        <di:waypoint x="670" y="260" />
+        <di:waypoint x="790" y="260" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="681" y="293" width="18" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_14ssmdm_di" bpmnElement="Flow_14ssmdm">
+        <di:waypoint x="360" y="428" />
+        <di:waypoint x="360" y="500" />
+        <di:waypoint x="790" y="500" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_18z5ktv_di" bpmnElement="Flow_18z5ktv">
+        <di:waypoint x="890" y="470" />
+        <di:waypoint x="1002" y="470" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1g88q01_di" bpmnElement="Flow_1g88q01">
+        <di:waypoint x="620" y="370" />
+        <di:waypoint x="645" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1gle7fs_di" bpmnElement="Flow_1gle7fs">
+        <di:waypoint x="468" y="370" />
+        <di:waypoint x="520" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1u0s5q3_di" bpmnElement="Flow_1u0s5q3">
+        <di:waypoint x="380" y="370" />
+        <di:waypoint x="432" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04fyajs_di" bpmnElement="Flow_04fyajs">
+        <di:waypoint x="218" y="370" />
+        <di:waypoint x="280" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0cco2le_di" bpmnElement="Flow_0cco2le">
+        <di:waypoint x="670" y="395" />
+        <di:waypoint x="670" y="470" />
+        <di:waypoint x="790" y="470" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="682" y="413" width="15" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="182" y="352" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="160" y="395" width="80" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0zbdjvo_di" bpmnElement="requestData">
+        <dc:Bounds x="280" y="330" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1r8umk6_di" bpmnElement="Event_0iosvx5">
+        <dc:Bounds x="432" y="352" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="420" y="395" width="60" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1spio7x_di" bpmnElement="Gateway_1spio7x" isMarkerVisible="true">
+        <dc:Bounds x="645" y="345" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="705" y="360" width="90" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1a0t1q2" bpmnElement="Activity_05m2wp9">
+        <dc:Bounds x="520" y="330" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1bghkjj_di" bpmnElement="Event_1bghkjj">
+        <dc:Bounds x="1002" y="452" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="981" y="495" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1sb1yi8_di" bpmnElement="Event_1sb1yi8">
+        <dc:Bounds x="1142" y="242" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1118" y="285" width="84" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1jlofsk" bpmnElement="Activity_16o2sg2">
+        <dc:Bounds x="790" y="430" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_06m5poy_di" bpmnElement="Activity_0zatqqh">
+        <dc:Bounds x="790" y="220" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_0qw7yh9_di" bpmnElement="Association_0qw7yh9">
+        <di:waypoint x="884" y="221" />
+        <di:waypoint x="910" y="198" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0oipo4a_di" bpmnElement="Event_00tszqz">
+        <dc:Bounds x="342" y="392" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="259" y="435" width="82" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,40 @@
+{
+  "components": [
+    {
+      "label": "Invoice Id",
+      "type": "number",
+      "id": "Field_16cjt4v",
+      "key": "invoiceId",
+      "disabled": true
+    },
+    {
+      "label": "Invoice owner",
+      "type": "textfield",
+      "id": "Field_1a5l9hs",
+      "key": "invoiceOwner",
+      "disabled": true
+    },
+    {
+      "label": "Invoice amount",
+      "type": "number",
+      "id": "Field_0nvbyqq",
+      "key": "invoiceAmount",
+      "disabled": true
+    },
+    {
+      "label": "Approve Invoice?",
+      "type": "checkbox",
+      "id": "Field_1lpoj18",
+      "key": "approved"
+    }
+  ],
+  "type": "default",
+  "id": "verifyInvoice",
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.0.0",
+  "exporter": {
+    "name": "Camunda Modeler",
+    "version": "5.2.0"
+  },
+  "schemaVersion": 4
+}
